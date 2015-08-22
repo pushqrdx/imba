@@ -2108,6 +2108,7 @@ export class Func < Code
 	def js o
 		body.consume(ImplicitReturn.new) unless option(:noreturn)
 		var ind = body.@indentation
+		var yields = option('generator')
 		# var s = ind and ind.@open
 		# p "indent function? {body.@indentation} {s} {s:generated} {body.count}"
 		body.@indentation = null if ind and ind.isGenerated
@@ -2121,7 +2122,7 @@ export class Func < Code
 		# and possibly dealing with it
 		var name = typeof @name == 'string' ? @name : @name.c
 		var name = name ? ' ' + name.replace(/\./g,'_') : ''
-		var out = "function{name}({params.c}) " + code
+		var out = "function{yields ? '*' : ''}{name}({params.c}) " + code
 		out = "({out})()" if option(:eval)
 		return out
 
@@ -2188,6 +2189,8 @@ export class MethodDeclaration < Func
 	# the outermost scope (root)
 
 	def js o
+		var yields = option('generator')
+
 		# FIXME Do this in the grammar - remnants of old implementation
 		unless type == :constructor or option(:noreturn)
 			if option(:greedy)
@@ -2215,8 +2218,9 @@ export class MethodDeclaration < Func
 
 		var ctx = context
 		var out = ""
+		var keyword = yields ? 'function*' : 'function'
 		# if ctx 
-
+		
 
 
 		var fname = sym__(self.name)
@@ -2225,24 +2229,24 @@ export class MethodDeclaration < Func
 
 		if ctx isa ClassScope and !target
 			if type == :constructor
-				out = "function {fname}{func}"
+				out = "{keyword} {fname}{func}"
 			elif option(:static)
-				out = "{ctx.context.c}.{fname} = function {func}"
+				out = "{ctx.context.c}.{fname} = {keyword} {func}"
 			else
-				out = "{ctx.context.c}.prototype.{fname} = function {func}"
+				out = "{ctx.context.c}.prototype.{fname} = {keyword} {func}"
 
 		elif ctx isa FileScope and !target
 			# register method as a root-function, but with auto-call? hmm
 			# should probably set using variable directly instead, no?
-			out = "function {fdecl}{func}"
+			out = "{keyword} {fdecl}{func}"
 
 		elif target and option(:static)
-			out = "{target.c}.{fname} = function {func}"
+			out = "{target.c}.{fname} = {keyword} {func}"
 
 		elif target
-			out = "{target.c}.prototype.{fname} = function {func}"
+			out = "{target.c}.prototype.{fname} = {keyword} {func}"
 		else
-			out = "function {fdecl}{func}"
+			out = "{keyword} {fdecl}{func}"
 
 		if option(:global)
 			out = "{fname} = {out}"
@@ -3267,6 +3271,9 @@ export class VarOrAccess < ValueNode
 		@identifier = value
 		@token 		= value.@value
 		@variable = null
+
+		if String(@value) == 'yield'
+			return Yield.new(self)
 		self
 
 	# Shortcircuit traverse so that it is not added to the stack?!
@@ -3305,6 +3312,7 @@ export class VarOrAccess < ValueNode
 			# p "declarator for var {decl.@declared}"
 			# FIX
 			# @value.safechain = safechain
+
 
 		# TODO deprecate and remove
 		if value.symbol.indexOf('$') >= 0
@@ -4263,6 +4271,10 @@ export class Call < Node
 		@receiver = null
 		@opexists = opexists
 		# some axioms that share the same syntax as calls will be redirected from here
+
+		if callee isa Yield
+			callee.args = args
+			return callee
 		
 		if callee isa VarOrAccess
 			var str = callee.value.symbol
@@ -4271,6 +4283,7 @@ export class Call < Node
 				# p "returning extern instead!"
 				callee.value.value.@type = 'EXTERN'
 				return ExternDeclaration.new(args)
+
 			if str == 'tag'
 				# console.log "ERROR - access args by some method"
 				return TagWrapper.new(args and args:index ? args.index(0) : args[0])
@@ -4413,7 +4426,17 @@ export class SuperCall < Call
 		self.callee = "{m.target.c}.super$.prototype.{m.name.c}"
 		super
 
-
+export class Yield < Call
+	
+	def visit
+		args.traverse if args
+		var fn = stack.up(Func)
+		fn.option('generator',yes)
+		self
+		
+	def js
+		args and args.realCount ? "yield {args.c(expression: yes)}" : "yield"
+		
 
 export class ExternDeclaration < ListNode
 
