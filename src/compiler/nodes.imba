@@ -6134,6 +6134,13 @@ export class TagId < TagPart
 		"setId({quoted})"
 
 export class TagFlag < TagPart
+	# get a unique slot from the cacher
+	
+	def reval cref,vref
+		var prev = value.c
+		@value = OP('=',cref,vref)
+		return prev
+		
 	def js
 		value ? "flagIf({quoted},{value.c})" : "flag({quoted})"
 
@@ -6158,6 +6165,9 @@ export class TagAttr < TagPart
 
 	def isSpecial
 		String(@name) == 'value'
+		
+	def jsval
+		value ? value.js : quoted
 
 	def js
 		let ns = null
@@ -6169,7 +6179,7 @@ export class TagAttr < TagPart
 			key = key.slice(i + 1)
 		
 		let dyn = @chain:length or @tag.type.@ns
-		let val = value ? value.js : quoted
+		let val = jsval
 		let add = ''
 		
 		if @chain:length
@@ -6312,21 +6322,7 @@ export class TagHandler < TagPart
 	def js o
 		let parts = [quoted].concat(@chain)
 		parts.push(value) if value
-		# if !value.isPrimitive and !(value isa Func and !value.nonlocals)
-		# 	@dyn ||= []
-		# 	@dyn.push(parts:length)
-		# find the context
-
 		return "on$({slot},[{AST.cary(parts)}],{scope__.context.c})"
-
-		#		let dl = @dyn and @dyn:length
-		#
-		#		if dl == 1
-		#			"on$({slot},[{AST.cary(parts)}],{@dyn[0]})"
-		#		elif dl > 1
-		#			"on$({slot},[{AST.cary(parts)}],-1)"
-		#		else
-		#			"on$({slot},[{AST.cary(parts)}],0)"
 
 export class Tag < Node
 
@@ -6659,16 +6655,40 @@ export class Tag < Node
 		
 		set(treeType: contentType)
 		
-		var specials = []
+		var inlineCacheCall = do |val,setter|
+			let ovar = OP('.',cacher,cacher.nextSlot)
+			let vvar = scope__.predeclare('_B')
+			let out = "{ovar.c}!=({vvar.c}={val})&&{o:path}.{setter}({ovar.c}={vvar.c})"
+			return out
+			# let val = part.reval(ovar,vvar)
+			
 		for part in @attributes
 			let out = part.js(jso)
 			out = ".{AST.mark(part.name)}" + out
-			# if part.isSpecial
-			#	specials.push(out)
 			if part.isStatic
 				statics.push(out)
-			else
+			elif part isa TagFlag and cacher
+				# let vvar = scope.declare("_",null)
+				# let ovar = cacher.nextRef(self) # scope__.predeclare('_X')
+				let ovar = OP('.',cacher,cacher.nextSlot)
+				let vvar = scope__.predeclare('_B')
+				console.log o:path
+				
+				let val = part.reval(ovar,vvar)
+				# calls.push(OP('&&',OP('!=',ovar,OP('=',vvar,val),part)).c)
+				let out = "{ovar.c}!=({vvar.c}={val})&&{o:path}.{part.js(jso)}"
 				calls.push(out)
+				# calls.push(OP('&&',OP('!=',ovar,OP('=',vvar,val),part)).c)
+				# calls.push(",{o:path}" + part.js(jso))
+			elif part:jsval
+				let ovar = OP('.',cacher,cacher.nextSlot)
+				let vvar = scope__.predeclare('_B')
+				let val = part.jsval
+				part.value = OP('=',ovar,vvar)
+				let out = "({ovar.c}!=({vvar.c}={val})&&{o:path}.{part.js(jso)})"
+				calls.push(out)
+			else
+				calls.push(o:path + out)
 		
 		# compile body
 	
@@ -6684,20 +6704,26 @@ export class Tag < Node
 				body = "{k}.$ = {k}.$ || {body}"
 
 			if bodySetter == 'setChildren' or bodySetter == 'setContent'
-				target.push ".{bodySetter}({body},{contentType})"
+				if target == calls
+					target.push "{o:path}.{bodySetter}({body},{contentType})"
+				else
+					target.push ".{bodySetter}({body},{contentType})"
 			elif bodySetter == 'setText'
-				let typ = content isa Str ? statics : calls
-				typ.push ".{bodySetter}({body})"
+				if content isa Str
+					statics.push ".{bodySetter}({body})"
+				else
+					calls.push '(' + inlineCacheCall(body,'setText') + ')'
+					
 			elif bodySetter == 'setTemplate'
-				if o:body.nonlocals
-					target.push ".{bodySetter}({body})"
+				if o:body.nonlocals and target == calls
+					target.push "{o:path}.{bodySetter}({body})"
 				else
 					statics.push ".{bodySetter}({body})"
 			else
-				target.push ".{bodySetter}({body})"
-		
-		if specials.len		
-			calls.push(*specials)
+				if target == calls
+					target.push "{o:path}.{bodySetter}({body})"
+				else
+					target.push ".{bodySetter}({body})"
 			
 		let shouldEnd = !isNative or o:template or calls:length > 0
 		let hasAttrs = Object.keys(@attrmap):length
@@ -6725,7 +6751,7 @@ export class Tag < Node
 				set(commit: commits.len ? commits : '')
 			else
 				if (commits.len and o:optim) or !isNative or hasAttrs or o:template
-					calls.push ".{isSelf ? "synced" : "end"}({args})"
+					calls.push "{o:path}.{isSelf ? "synced" : "end"}({args})"
 		
 		if @reference and !isSelf
 			out = "{reference.c} = {pre}({reference.c}={ctor})"
@@ -6737,9 +6763,9 @@ export class Tag < Node
 		
 		if calls != statics
 			if o:optim and o:optim != self
-				set(commit: "{o:path}{calls.join("")}") if calls:length and o:commit == undefined
+				set(commit: "{calls.join(",")}") if calls:length and o:commit == undefined
 			else
-				out = "({out})" + calls.join("")
+				out = "({out})," + calls.join(",")
 		
 		if @typeNum
 			@typeNum.value = contentType
@@ -7659,6 +7685,11 @@ export class Scope
 		var dec = @vars.add(variable,init)
 		variable.declarator ||= dec
 		return variable
+	
+	def predeclare name,o = {}
+		@predeclared ||= {}
+		@predeclared[name] ||= declare(name,null,o)
+		
 
 	# what are the differences here? omj
 	# we only need a temporary thing with defaults -- that is all

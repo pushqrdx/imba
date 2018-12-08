@@ -588,7 +588,7 @@ class Imba.Tag
 
 	
 	def flagIf flag, bool
-		var f = @flags_ ||= {}
+		var f = this:$:f$ # @flags_ ||= {}
 		let prev = f[flag]
 
 		if bool and !prev
@@ -1015,6 +1015,7 @@ class TagCache
 	def self.build owner
 		var item = []
 		item.@tag = owner
+		item:f$ = {}
 		return item
 
 	def initialize owner
