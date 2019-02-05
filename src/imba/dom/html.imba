@@ -4,6 +4,69 @@ tag fragment < element
 	def self.createNode
 		Imba.document.createDocumentFragment
 
+# A placeholder tag for enabling the content mechanism.
+tag content
+	prop name
+	
+	def setup
+		data &&	name = data
+		self
+
+# An extension to the base tag.
+# Provides:
+#	1. Access to yielded children through @children property.
+#	2. Ability to specify css classes through the class attribute and/or the concise syntax.
+#	3. Slot mechanism incl. named slots, through the <content> tag.
+extend tag element
+	prop for
+
+	def setup
+		@children = children
+		# @for && setAttribute 'for', @for
+		self
+		
+	def setClass classes
+		setAttribute('class', "{getAttribute('class')} {classes}")
+
+	def class
+		getAttribute('class')
+		
+	def end
+		setup
+		commit(0)
+		fill
+		this:end = Imba.Tag:end
+		self
+		
+	# A recursive method that if called without args will
+	# call itself with proper args if found.
+	# This method is called on end event of the tag so we have
+	# access to tag dom, and ancestor children
+	def fill content, node
+		unless content and node
+			if @children
+				for content in dom?.querySelectorAll('._content')
+					if @children isa Array
+						for child in @children
+							fill content, child
+					else 
+						fill content, @children
+			return
+
+		var slot = Imba.getTagForDom(content)
+		var name = slot.@name or ''
+		var target = node.@for or ''
+		
+		# node has a target... only fill
+		# into contents with same name.
+		if target !== name
+			return
+		
+		# Doing this maintains tag integrity. however
+		# contents won't be cloned if multiple slots are targeted.
+		slot && slot.appendChild node
+		self
+
 extend tag html
 	def parent
 		null

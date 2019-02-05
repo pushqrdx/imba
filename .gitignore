@@ -10,3 +10,4 @@ dist/imba.edge.*
 test/webpack/js/**/*.js
 test/attic
 *.tmp.js
+package-lock.json
