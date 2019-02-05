@@ -2538,12 +2538,6 @@ Imba.defineTag('fragment', 'element', function(tag){
 Imba.defineTag('content', function(tag){
 	tag.prototype.name = function(v){ return this._name; }
 	tag.prototype.setName = function(v){ this._name = v; return this; };
-	
-	tag.prototype.setup = function (){
-		var v_;
-		this.data() && ((this.setName(v_ = this.data()),v_));
-		return this;
-	};
 });
 
 
@@ -2557,7 +2551,6 @@ Imba.extendTag('element', function(tag){
 	
 	tag.prototype.setup = function (){
 		this._children = this.children();
-		
 		return this;
 	};
 	

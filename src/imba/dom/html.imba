@@ -7,10 +7,6 @@ tag fragment < element
 # A placeholder tag for enabling the content mechanism.
 tag content
 	prop name
-	
-	def setup
-		data &&	name = data
-		self
 
 # An extension to the base tag.
 # Provides:
@@ -22,7 +18,6 @@ extend tag element
 
 	def setup
 		@children = children
-		# @for && setAttribute 'for', @for
 		self
 		
 	def setClass classes
