@@ -2571,7 +2571,7 @@ Imba.extendTag('element', function(tag){
 	tag.prototype.setFor = function(v){ this._for = v; return this; };
 	
 	tag.prototype.setClass = function (classes){
-		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes));
+		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes).trim());
 	};
 	
 	tag.prototype.class = function (){

@@ -29,7 +29,7 @@ extend tag element
 	prop for
 
 	def setClass classes
-		setAttribute('class', "{getAttribute('class') or ''} {classes}")
+		setAttribute('class', "{getAttribute('class') or ''} {classes}".trim)
 
 	def class
 		getAttribute('class')
