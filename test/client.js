@@ -2526,6 +2526,9 @@ Imba.Tag;
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
+function len$(a){
+	return a && (a.len instanceof Function ? a.len() : a.length) || 0;
+};
 var Imba = __webpack_require__(1);
 
 Imba.defineTag('fragment', 'element', function(tag){
@@ -2538,6 +2541,24 @@ Imba.defineTag('fragment', 'element', function(tag){
 Imba.defineTag('content', function(tag){
 	tag.prototype.name = function(v){ return this._name; }
 	tag.prototype.setName = function(v){ this._name = v; return this; };
+	tag.prototype.parent = function(v){ return this._parent; }
+	tag.prototype.setParent = function(v){ this._parent = v; return this; };
+	
+	
+	tag.prototype.ancestor = function (node){
+		var $1;
+		if (($1 = node) && $1._context_ === 0) {
+			return node;
+		};
+		return this.ancestor(node._owner_);
+	};
+	
+	
+	tag.prototype.setup = function (){
+		var v_;
+		this._parent = this.ancestor(this);
+		return this.data() && ((this.setName(v_ = this.data()),v_));
+	};
 });
 
 
@@ -2549,63 +2570,54 @@ Imba.extendTag('element', function(tag){
 	tag.prototype['for'] = function(v){ return this._for; }
 	tag.prototype.setFor = function(v){ this._for = v; return this; };
 	
-	tag.prototype.setup = function (){
-		this._children = this.children();
-		return this;
-	};
-	
 	tag.prototype.setClass = function (classes){
-		return this.setAttribute('class',("" + this.getAttribute('class') + " " + classes));
+		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes));
 	};
 	
 	tag.prototype.class = function (){
 		return this.getAttribute('class');
 	};
 	
+	tag.prototype.setup = function (){
+		this._children = this.children();
+		return this;
+	};
+	
 	tag.prototype.end = function (){
 		this.setup();
 		this.commit(0);
-		this.fill();
+		this.fill(); 
 		this.end = Imba.Tag.end;
 		return this;
 	};
 	
-	
-	
-	
-	
-	tag.prototype.fill = function (content,node){
-		var dom_;
-		if (!(content && node)) {
-			if (this._children) {
-				for (let i = 0, items = iter$((dom_ = this.dom()) && dom_.querySelectorAll  &&  dom_.querySelectorAll('._content')), len = items.length, content; i < len; i++) {
-					content = items[i];
-					if (this._children instanceof Array) {
-						for (let j = 0, ary = iter$(this._children), len = ary.length; j < len; j++) {
-							this.fill(content,ary[j]);
-						};
-					} else {
-						this.fill(content,this._children);
-					};
+	tag.prototype.fill = function (slot,nodes){
+		if (!(slot && nodes)) {
+			// if this is a content tag, get children
+			// associated with it and call this method
+			// to fill with them.
+			// enhancement: perhaps we could use props to check instead of css selector?
+			if (this.matches('._content')) {
+				var nodes = this._parent._children;
+				if (len$(nodes) > 0) {
+					this.fill(this,nodes);
 				};
 			};
 			return;
 		};
 		
-		var slot = Imba.getTagForDom(content);
 		var name = slot._name || '';
-		var target = node._for || '';
 		
-		
-		
-		if (target !== name) {
-			return;
+		let res = [];
+		for (let i = 0, items = iter$(nodes), len = items.length, node; i < len; i++) {
+			node = items[i];
+			var target = node._for || '';
+			
+			res.push((target === name) && (
+				slot.appendChild(node)
+			));
 		};
-		
-		
-		
-		slot && slot.appendChild(node);
-		return this;
+		return res;
 	};
 });
 

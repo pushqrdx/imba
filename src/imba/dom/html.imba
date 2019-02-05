@@ -7,6 +7,18 @@ tag fragment < element
 # A placeholder tag for enabling the content mechanism.
 tag content
 	prop name
+	prop parent
+	
+	# Gets the top most Imba tag housing this content slot.
+	def ancestor node
+		if node?.@context_ === 0
+			return node
+		ancestor node.@owner_
+	
+	# Hooks the content grand parent.
+	def setup
+		@parent = ancestor this
+		data && name = data
 
 # An extension to the base tag.
 # Provides:
@@ -16,51 +28,42 @@ tag content
 extend tag element
 	prop for
 
-	def setup
-		@children = children
-		self
-		
 	def setClass classes
-		setAttribute('class', "{getAttribute('class')} {classes}")
+		setAttribute('class', "{getAttribute('class') or ''} {classes}")
 
 	def class
 		getAttribute('class')
-		
+
+	def setup
+		@children = children
+		self
+
 	def end
 		setup
 		commit(0)
-		fill
+		fill # at this stage we have enough info.
 		this:end = Imba.Tag:end
 		self
-		
-	# A recursive method that if called without args will
-	# call itself with proper args if found.
-	# This method is called on end event of the tag so we have
-	# access to tag dom, and ancestor children
-	def fill content, node
-		unless content and node
-			if @children
-				for content in dom?.querySelectorAll('._content')
-					if @children isa Array
-						for child in @children
-							fill content, child
-					else 
-						fill content, @children
+	
+	def fill slot, nodes
+		unless slot and nodes
+			# if this is a content tag, get children
+			# associated with it and call this method
+			# to fill with them.
+			# enhancement: perhaps we could use props to check instead of css selector?
+			if matches '._content'
+				var nodes = this.@parent.@children
+				if nodes.len > 0
+					fill this, nodes
 			return
-
-		var slot = Imba.getTagForDom(content)
+		
 		var name = slot.@name or ''
-		var target = node.@for or ''
-		
-		# node has a target... only fill
-		# into contents with same name.
-		if target !== name
-			return
-		
-		# Doing this maintains tag integrity. however
-		# contents won't be cloned if multiple slots are targeted.
-		slot && slot.appendChild node
-		self
+			
+		for node in nodes
+			var target = node.@for or ''
+			
+			if target is name
+				slot.appendChild node
 
 extend tag html
 	def parent
