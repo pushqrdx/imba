@@ -2541,8 +2541,6 @@ Imba.defineTag('fragment', 'element', function(tag){
 Imba.defineTag('content', function(tag){
 	tag.prototype.name = function(v){ return this._name; }
 	tag.prototype.setName = function(v){ this._name = v; return this; };
-	tag.prototype.parent = function(v){ return this._parent; }
-	tag.prototype.setParent = function(v){ this._parent = v; return this; };
 	
 	
 	tag.prototype.ancestor = function (node){
@@ -2557,7 +2555,9 @@ Imba.defineTag('content', function(tag){
 	tag.prototype.setup = function (){
 		var v_;
 		this._parent = this.ancestor(this);
-		return this.data() && ((this.setName(v_ = this.data()),v_));
+		this.data() && ((this.setName(v_ = this.data()),v_));
+		this._fragment = Imba.document().createDocumentFragment();
+		return this._magic = '2f3a4fccca6406e35bcf33e92dd93135';
 	};
 });
 
@@ -2569,6 +2569,33 @@ Imba.defineTag('content', function(tag){
 Imba.extendTag('element', function(tag){
 	tag.prototype['for'] = function(v){ return this._for; }
 	tag.prototype.setFor = function(v){ this._for = v; return this; };
+	
+	tag.prototype.before = function (node){
+		if ((typeof node=='string'||node instanceof String)) {
+			this.dom().before(Imba.document().createTextNode(node));
+		} else if (node) {
+			this.dom().before(node._slot_ || node);
+			Imba.TagManager.insert(node._tag || node,this);
+		};
+		return this;
+	};
+	
+	tag.prototype.after = function (node){
+		if ((typeof node=='string'||node instanceof String)) {
+			this.dom().after(Imba.document().createTextNode(node));
+		} else if (node) {
+			this.dom().after(node._slot_ || node);
+			Imba.TagManager.insert(node._tag || node,this);
+		};
+		return this;
+	};
+	
+	tag.prototype.remove = function (node){
+		var $1, $2;
+		this.dom().remove(($1 = node) && $1._slot_ || node);
+		Imba.TagManager.remove(($2 = node) && $2._tag || node,this);
+		return this;
+	};
 	
 	tag.prototype.setClass = function (classes){
 		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes).trim());
@@ -2592,12 +2619,14 @@ Imba.extendTag('element', function(tag){
 	};
 	
 	tag.prototype.fill = function (slot,nodes){
+		var _fragment_;
 		if (!(slot && nodes)) {
 			// if this is a content tag, get children
 			// associated with it and call this method
 			// to fill with them.
 			// enhancement: perhaps we could use props to check instead of css selector?
-			if (this.matches('._content')) {
+			
+			if (this._magic === '2f3a4fccca6406e35bcf33e92dd93135') {
 				var nodes = this._parent._children;
 				if (len$(nodes) > 0) {
 					this.fill(this,nodes);
@@ -2608,16 +2637,17 @@ Imba.extendTag('element', function(tag){
 		
 		var name = slot._name || '';
 		
-		let res = [];
 		for (let i = 0, items = iter$(nodes), len = items.length, node; i < len; i++) {
 			node = items[i];
 			var target = node._for || '';
 			
-			res.push((target === name) && (
-				slot.appendChild(node)
-			));
+			if (target === name) {
+				(_fragment_ = slot._fragment) && _fragment_.appendChild  &&  _fragment_.appendChild(node);
+			};
 		};
-		return res;
+		
+		slot.before(slot._fragment);
+		return slot.remove();
 	};
 });
 

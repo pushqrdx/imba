@@ -7,7 +7,6 @@ tag fragment < element
 # A placeholder tag for enabling the content mechanism.
 tag content
 	prop name
-	prop parent
 	
 	# Gets the top most Imba tag housing this content slot.
 	def ancestor node
@@ -19,14 +18,38 @@ tag content
 	def setup
 		@parent = ancestor this
 		data && name = data
+		@fragment = Imba.document.createDocumentFragment
+		@magic = '2f3a4fccca6406e35bcf33e92dd93135'
 
 # An extension to the base tag.
 # Provides:
 #	1. Access to yielded children through @children property.
 #	2. Ability to specify css classes through the class attribute and/or the concise syntax.
 #	3. Slot mechanism incl. named slots, through the <content> tag.
+#	4. Some new tag functionality like before, after, and remove.
 extend tag element
 	prop for
+
+	def before node
+		if node isa String
+			dom.before(Imba.document.createTextNode(node))
+		elif node
+			dom.before(node.@slot_ or node)
+			Imba.TagManager.insert(node.@tag or node, self)
+		self
+		
+	def after node
+		if node isa String
+			dom.after(Imba.document.createTextNode(node))
+		elif node
+			dom.after(node.@slot_ or node)
+			Imba.TagManager.insert(node.@tag or node, self)
+		self
+		
+	def remove node
+		dom.remove(node?.@slot_ or node)
+		Imba.TagManager.remove(node?.@tag or node, self)
+		self
 
 	def setClass classes
 		setAttribute('class', "{getAttribute('class') or ''} {classes}".trim)
@@ -51,7 +74,8 @@ extend tag element
 			# associated with it and call this method
 			# to fill with them.
 			# enhancement: perhaps we could use props to check instead of css selector?
-			if matches '._content'
+			
+			if @magic is '2f3a4fccca6406e35bcf33e92dd93135'
 				var nodes = this.@parent.@children
 				if nodes.len > 0
 					fill this, nodes
@@ -63,7 +87,10 @@ extend tag element
 			var target = node.@for or ''
 			
 			if target is name
-				slot.appendChild node
+				slot.@fragment?.appendChild node
+				
+		slot.before slot.@fragment
+		slot.remove
 
 extend tag html
 	def parent
