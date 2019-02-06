@@ -73,7 +73,6 @@ extend tag element
 			# if this is a content tag, get children
 			# associated with it and call this method
 			# to fill with them.
-			# enhancement: perhaps we could use props to check instead of css selector?
 			
 			if @magic is '2f3a4fccca6406e35bcf33e92dd93135'
 				var nodes = this.@parent.@children

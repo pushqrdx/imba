@@ -2566,6 +2566,7 @@ Imba.defineTag('content', function(tag){
 
 
 
+
 Imba.extendTag('element', function(tag){
 	tag.prototype['for'] = function(v){ return this._for; }
 	tag.prototype.setFor = function(v){ this._for = v; return this; };
@@ -2624,7 +2625,6 @@ Imba.extendTag('element', function(tag){
 			// if this is a content tag, get children
 			// associated with it and call this method
 			// to fill with them.
-			// enhancement: perhaps we could use props to check instead of css selector?
 			
 			if (this._magic === '2f3a4fccca6406e35bcf33e92dd93135') {
 				var nodes = this._parent._children;
