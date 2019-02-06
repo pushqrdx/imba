@@ -10,7 +10,7 @@ require './html'
 require './pointer'
 require './touch'
 require './event'
-require './extensions.imba'
+require './extensions'
 
 if $web$
 	require './reconciler'
