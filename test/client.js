@@ -1900,7 +1900,17 @@ Imba.Tag.prototype.flagIf = function (flag,bool){
 Imba.Tag.prototype.setFlag = function (name,value){
 	let flags = this._namedFlags_ || (this._namedFlags_ = {});
 	let prev = flags[name];
-	if (prev != value) {
+	if (value instanceof Array) {
+		for (let i = 0, items = iter$(value), len = items.length; i < len; i++) {
+			this.setFlag(--name,items[i]);
+		};
+	} else if (value instanceof Object) {
+		for (let key in value){
+			let val;
+			val = value[key];if (!val) { continue; };
+			this.setFlag(--name,key);
+		};
+	} else if (prev != value) {
 		if (prev) { this.unflag(prev) };
 		if (value) { this.flag(value) };
 		flags[name] = value;
