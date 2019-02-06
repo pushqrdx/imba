@@ -4,17 +4,50 @@ var Imba = require("../imba")
 tag content
 	prop name
 	
-	# Gets the top most Imba tag housing this content slot.
 	def ancestor node
 		if node?.@context_ === 0
 			return node
 		ancestor node.@owner_
 	
-	# Hooks the content grand parent.
-	def setup
+	def end
+		setup
+		commit(0)
+		# Maybe cleanup here?
+		this:end = Imba.Tag:end
+		self
+	
+	def setup		
 		@parent = ancestor this
 		data && name = data
 		@magic = '2f3a4fccca6406e35bcf33e92dd93135'
+
+	def flatten root
+		var nodes = []
+		
+		if root isa Array
+			for node in root
+				nodes.push node
+		else 
+			nodes.push root
+			
+		return nodes
+	
+	def fragment nodes
+		var fragment = Imba.getTagForDom Imba.document.createDocumentFragment
+		for node in flatten nodes 
+			unless node isa Imba.Tag 
+				continue
+			if @name is node.@for or ''
+				fragment.appendChild node
+		fragment
+		
+	def render
+		var nodes = fragment @parent.@children
+		# Possible place to get rid of the div wrapper.
+		# Eiher directly return nodes somehow
+		# or insert them into parent leaving this empty.
+		<self>
+			nodes
 
 # An extension to the base tag.
 # Provides:
@@ -52,37 +85,8 @@ extend tag element
 	def class
 		getAttribute('class')
 
-	def setup
-		@children = children
-		self
-
-	def end
-		setup
-		commit(0)
-		fill # at this stage we have enough info.
-		this:end = Imba.Tag:end
-		self
-	
-	def fill slot, nodes
-		unless slot and nodes
-			# if this is a content tag, get children
-			# associated with it and call this method
-			# to fill with them.
-			if @magic is '2f3a4fccca6406e35bcf33e92dd93135'
-				var nodes = this.@parent.@children
-				if nodes.len > 0
-					fill this, nodes
-			return
-		
-		var name = slot.@name or ''
-		var fragment = Imba.getTagForDom Imba.document.createDocumentFragment
-			
-		for node in nodes
-			var target = node.@for or ''
-			
-			if target is name
-				fragment.appendChild node
-				
-		slot.before fragment
-		slot.remove
+	def setContent content, type
+		@children = content
+		if type != 3 and type != 1
+			setChildren content, type
 		self

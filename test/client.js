@@ -3772,16 +3772,12 @@ Imba.Event.prototype.which = function (){
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
-function len$(a){
-	return a && (a.len instanceof Function ? a.len() : a.length) || 0;
-};
 var Imba = __webpack_require__(1);
 
 
 Imba.defineTag('content', function(tag){
 	tag.prototype.name = function(v){ return this._name; }
 	tag.prototype.setName = function(v){ this._name = v; return this; };
-	
 	
 	tag.prototype.ancestor = function (node){
 		var $1;
@@ -3791,12 +3787,57 @@ Imba.defineTag('content', function(tag){
 		return this.ancestor(node._owner_);
 	};
 	
+	tag.prototype.end = function (){
+		this.setup();
+		this.commit(0);
+		
+		this.end = Imba.Tag.end;
+		return this;
+	};
 	
 	tag.prototype.setup = function (){
 		var v_;
 		this._parent = this.ancestor(this);
 		this.data() && ((this.setName(v_ = this.data()),v_));
 		return this._magic = '2f3a4fccca6406e35bcf33e92dd93135';
+	};
+	
+	tag.prototype.flatten = function (root){
+		var nodes = [];
+		
+		if (root instanceof Array) {
+			for (let i = 0, items = iter$(root), len = items.length; i < len; i++) {
+				nodes.push(items[i]);
+			};
+		} else {
+			nodes.push(root);
+		};
+		
+		return nodes;
+	};
+	
+	tag.prototype.fragment = function (nodes){
+		var fragment = Imba.getTagForDom(Imba.document().createDocumentFragment());
+		for (let i = 0, items = iter$(this.flatten(nodes)), len = items.length, node; i < len; i++) {
+			node = items[i];
+			if (!((node instanceof Imba.Tag))) {
+				continue;
+			};
+			if (this._name === node._for || '') {
+				fragment.appendChild(node);
+			};
+		};
+		return fragment;
+	};
+	
+	tag.prototype.render = function (){
+		var nodes = this.fragment(this._parent._children);
+		
+		
+		
+		return this.$open(0).setChildren(
+			nodes
+		,3).synced();
 	};
 });
 
@@ -3845,47 +3886,11 @@ Imba.extendTag('element', function(tag){
 		return this.getAttribute('class');
 	};
 	
-	tag.prototype.setup = function (){
-		this._children = this.children();
-		return this;
-	};
-	
-	tag.prototype.end = function (){
-		this.setup();
-		this.commit(0);
-		this.fill(); 
-		this.end = Imba.Tag.end;
-		return this;
-	};
-	
-	tag.prototype.fill = function (slot,nodes){
-		if (!(slot && nodes)) {
-			// if this is a content tag, get children
-			// associated with it and call this method
-			// to fill with them.
-			if (this._magic === '2f3a4fccca6406e35bcf33e92dd93135') {
-				var nodes = this._parent._children;
-				if (len$(nodes) > 0) {
-					this.fill(this,nodes);
-				};
-			};
-			return;
+	tag.prototype.setContent = function (content,type){
+		this._children = content;
+		if (type != 3 && type != 1) {
+			this.setChildren(content,type);
 		};
-		
-		var name = slot._name || '';
-		var fragment = Imba.getTagForDom(Imba.document().createDocumentFragment());
-		
-		for (let i = 0, items = iter$(nodes), len = items.length, node; i < len; i++) {
-			node = items[i];
-			var target = node._for || '';
-			
-			if (target === name) {
-				fragment.appendChild(node);
-			};
-		};
-		
-		slot.before(fragment);
-		slot.remove();
 		return this;
 	};
 });
