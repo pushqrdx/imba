@@ -448,9 +448,8 @@ const exportedConst = exports.exportedConst = 20;
 
 
 __webpack_require__(2);
-__webpack_require__(16);
-
 __webpack_require__(17);
+
 __webpack_require__(18);
 __webpack_require__(19);
 __webpack_require__(20);
@@ -476,16 +475,17 @@ __webpack_require__(39);
 __webpack_require__(40);
 __webpack_require__(41);
 __webpack_require__(42);
-
 __webpack_require__(43);
+
 __webpack_require__(44);
 __webpack_require__(45);
+__webpack_require__(46);
 
 if (true) {
-	__webpack_require__(46);
-	__webpack_require__(49);
+	__webpack_require__(47);
 	__webpack_require__(50);
 	__webpack_require__(51);
+	__webpack_require__(52);
 };
 
 if (false) {};
@@ -897,9 +897,10 @@ __webpack_require__(12);
 __webpack_require__(3);
 __webpack_require__(13);
 __webpack_require__(14);
+__webpack_require__(15);
 
 if (true) {
-	__webpack_require__(15);
+	__webpack_require__(16);
 };
 
 if (false) {};
@@ -2526,128 +2527,11 @@ Imba.Tag;
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
-function len$(a){
-	return a && (a.len instanceof Function ? a.len() : a.length) || 0;
-};
 var Imba = __webpack_require__(1);
 
 Imba.defineTag('fragment', 'element', function(tag){
 	tag.createNode = function (){
 		return Imba.document().createDocumentFragment();
-	};
-});
-
-
-Imba.defineTag('content', function(tag){
-	tag.prototype.name = function(v){ return this._name; }
-	tag.prototype.setName = function(v){ this._name = v; return this; };
-	
-	
-	tag.prototype.ancestor = function (node){
-		var $1;
-		if (($1 = node) && $1._context_ === 0) {
-			return node;
-		};
-		return this.ancestor(node._owner_);
-	};
-	
-	
-	tag.prototype.setup = function (){
-		var v_;
-		this._parent = this.ancestor(this);
-		this.data() && ((this.setName(v_ = this.data()),v_));
-		this._fragment = Imba.document().createDocumentFragment();
-		return this._magic = '2f3a4fccca6406e35bcf33e92dd93135';
-	};
-});
-
-
-
-
-
-
-
-Imba.extendTag('element', function(tag){
-	tag.prototype['for'] = function(v){ return this._for; }
-	tag.prototype.setFor = function(v){ this._for = v; return this; };
-	
-	tag.prototype.before = function (node){
-		if ((typeof node=='string'||node instanceof String)) {
-			this.dom().before(Imba.document().createTextNode(node));
-		} else if (node) {
-			this.dom().before(node._slot_ || node);
-			Imba.TagManager.insert(node._tag || node,this);
-		};
-		return this;
-	};
-	
-	tag.prototype.after = function (node){
-		if ((typeof node=='string'||node instanceof String)) {
-			this.dom().after(Imba.document().createTextNode(node));
-		} else if (node) {
-			this.dom().after(node._slot_ || node);
-			Imba.TagManager.insert(node._tag || node,this);
-		};
-		return this;
-	};
-	
-	tag.prototype.remove = function (node){
-		var $1, $2;
-		this.dom().remove(($1 = node) && $1._slot_ || node);
-		Imba.TagManager.remove(($2 = node) && $2._tag || node,this);
-		return this;
-	};
-	
-	tag.prototype.setClass = function (classes){
-		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes).trim());
-	};
-	
-	tag.prototype.class = function (){
-		return this.getAttribute('class');
-	};
-	
-	tag.prototype.setup = function (){
-		this._children = this.children();
-		return this;
-	};
-	
-	tag.prototype.end = function (){
-		this.setup();
-		this.commit(0);
-		this.fill(); 
-		this.end = Imba.Tag.end;
-		return this;
-	};
-	
-	tag.prototype.fill = function (slot,nodes){
-		var _fragment_;
-		if (!(slot && nodes)) {
-			// if this is a content tag, get children
-			// associated with it and call this method
-			// to fill with them.
-			
-			if (this._magic === '2f3a4fccca6406e35bcf33e92dd93135') {
-				var nodes = this._parent._children;
-				if (len$(nodes) > 0) {
-					this.fill(this,nodes);
-				};
-			};
-			return;
-		};
-		
-		var name = slot._name || '';
-		
-		for (let i = 0, items = iter$(nodes), len = items.length, node; i < len; i++) {
-			node = items[i];
-			var target = node._for || '';
-			
-			if (target === name) {
-				(_fragment_ = slot._fragment) && _fragment_.appendChild  &&  _fragment_.appendChild(node);
-			};
-		};
-		
-		slot.before(slot._fragment);
-		return slot.remove();
 	};
 });
 
@@ -3878,6 +3762,130 @@ Imba.Event.prototype.which = function (){
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
+function len$(a){
+	return a && (a.len instanceof Function ? a.len() : a.length) || 0;
+};
+var Imba = __webpack_require__(1);
+
+
+Imba.defineTag('content', function(tag){
+	tag.prototype.name = function(v){ return this._name; }
+	tag.prototype.setName = function(v){ this._name = v; return this; };
+	
+	
+	tag.prototype.ancestor = function (node){
+		var $1;
+		if (($1 = node) && $1._context_ === 0) {
+			return node;
+		};
+		return this.ancestor(node._owner_);
+	};
+	
+	
+	tag.prototype.setup = function (){
+		var v_;
+		this._parent = this.ancestor(this);
+		this.data() && ((this.setName(v_ = this.data()),v_));
+		return this._magic = '2f3a4fccca6406e35bcf33e92dd93135';
+	};
+});
+
+
+
+
+
+
+
+Imba.extendTag('element', function(tag){
+	tag.prototype['for'] = function(v){ return this._for; }
+	tag.prototype.setFor = function(v){ this._for = v; return this; };
+	
+	tag.prototype.before = function (node){
+		if ((typeof node=='string'||node instanceof String)) {
+			this.dom().before(Imba.document().createTextNode(node));
+		} else if (node) {
+			this.dom().before(node._slot_ || node);
+			Imba.TagManager.insert(node._tag || node,this);
+		};
+		return this;
+	};
+	
+	tag.prototype.after = function (node){
+		if ((typeof node=='string'||node instanceof String)) {
+			this.dom().after(Imba.document().createTextNode(node));
+		} else if (node) {
+			this.dom().after(node._slot_ || node);
+			Imba.TagManager.insert(node._tag || node,this);
+		};
+		return this;
+	};
+	
+	tag.prototype.remove = function (node){
+		var $1, $2;
+		this.dom().remove(($1 = node) && $1._slot_ || node);
+		Imba.TagManager.remove(($2 = node) && $2._tag || node,this);
+		return this;
+	};
+	
+	tag.prototype.setClass = function (classes){
+		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes).trim());
+	};
+	
+	tag.prototype.class = function (){
+		return this.getAttribute('class');
+	};
+	
+	tag.prototype.setup = function (){
+		this._children = this.children();
+		return this;
+	};
+	
+	tag.prototype.end = function (){
+		this.setup();
+		this.commit(0);
+		this.fill(); 
+		this.end = Imba.Tag.end;
+		return this;
+	};
+	
+	tag.prototype.fill = function (slot,nodes){
+		if (!(slot && nodes)) {
+			// if this is a content tag, get children
+			// associated with it and call this method
+			// to fill with them.
+			if (this._magic === '2f3a4fccca6406e35bcf33e92dd93135') {
+				var nodes = this._parent._children;
+				if (len$(nodes) > 0) {
+					this.fill(this,nodes);
+				};
+			};
+			return;
+		};
+		
+		var name = slot._name || '';
+		var fragment = Imba.getTagForDom(Imba.document().createDocumentFragment());
+		
+		for (let i = 0, items = iter$(nodes), len = items.length, node; i < len; i++) {
+			node = items[i];
+			var target = node._for || '';
+			
+			if (target === name) {
+				fragment.appendChild(node);
+			};
+		};
+		
+		slot.before(fragment);
+		slot.remove();
+		return this;
+	};
+});
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
 var self = {};
 // externs;
 
@@ -4371,7 +4379,7 @@ if (apple) {
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -4861,7 +4869,7 @@ await = self.await = function (){
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -5342,7 +5350,7 @@ describe('Syntax - Loops',function() {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0);
@@ -5598,7 +5606,7 @@ describe('Syntax - Class',function() {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0);
@@ -5753,7 +5761,7 @@ describe('Syntax - super',function() {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function intersect$(a,b){
@@ -5950,7 +5958,7 @@ describe('Syntax - Operators',function() {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 var self = {};
@@ -6022,7 +6030,7 @@ describe("Syntax - Variables",function() {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 function len$(a){
@@ -6128,7 +6136,7 @@ describe('Syntax - Arrays',function() {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 var self = {};
@@ -6215,7 +6223,7 @@ describe('Syntax - Catch',function() {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0);
@@ -6603,7 +6611,7 @@ describe('Syntax - Functions',function() {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -6648,7 +6656,7 @@ describe('Syntax - Return',function() {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 function union$(a,b){
@@ -6724,7 +6732,7 @@ describe("Syntax - Statements",function() {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0);
@@ -6876,7 +6884,7 @@ describe('Syntax - Properties',function() {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -6990,7 +6998,7 @@ describe("Syntax - Literals",function() {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -7021,7 +7029,7 @@ describe('Syntax - Existential operator',function() {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -7321,7 +7329,7 @@ describe("Syntax - Scope",function() {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -7339,7 +7347,7 @@ describe('Syntax - Delete',function() {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports) {
 
 var self = {};
@@ -7365,7 +7373,7 @@ describe('Syntax - Blockparam',function() {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0);
@@ -7423,7 +7431,7 @@ exports.Item = Item;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -7460,7 +7468,7 @@ describe('Syntax - Switch',function() {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -8085,7 +8093,7 @@ describe('Syntax - Assignment',function() {
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -8128,7 +8136,7 @@ describe("Syntax - Conditionals",function() {
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var self = {};
@@ -8198,7 +8206,7 @@ describe('Await',function() {
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -8657,7 +8665,7 @@ describe('Syntax - Tags',function() {
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 var self = {};
@@ -8679,7 +8687,7 @@ describe("Formatting",function() {
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 var self = {};
@@ -8819,7 +8827,7 @@ describe('Syntax - Defs',function() {
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 var self = {};
@@ -8915,7 +8923,7 @@ describe('Issues',function() {
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports) {
 
 // externs;
@@ -9008,7 +9016,7 @@ describe("Syntax - Quirks",function() {
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -9424,7 +9432,7 @@ describe('Tags - Define',function() {
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -9677,7 +9685,7 @@ describe('Tags - Cache',function() {
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0), _1 = Imba.createElement;
@@ -9716,7 +9724,7 @@ describe("Tags - SVG",function() {
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -9726,7 +9734,7 @@ var Imba = __webpack_require__(0), _2 = Imba.createTagList, self = {}, _1 = Imba
 
 // externs;
 
-var _ = __webpack_require__(47);
+var _ = __webpack_require__(48);
 
 Imba.defineTag('el', function(tag){
 	
@@ -10237,7 +10245,7 @@ describe("Tags",function() {
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.9.1
@@ -11934,10 +11942,10 @@ describe("Tags",function() {
   }
 }());
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(48)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(49)(module)))
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -11965,7 +11973,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0), _1 = Imba.createElement;
@@ -11999,7 +12007,7 @@ describe("HTML",function() {
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function iter$(a){ return a ? (a.toArray ? a.toArray() : a) : []; };
@@ -12099,7 +12107,7 @@ document.body.appendChild(HE.dom());
 
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Imba = __webpack_require__(0), _1 = Imba.createElement;
