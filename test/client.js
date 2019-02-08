@@ -1900,17 +1900,7 @@ Imba.Tag.prototype.flagIf = function (flag,bool){
 Imba.Tag.prototype.setFlag = function (name,value){
 	let flags = this._namedFlags_ || (this._namedFlags_ = {});
 	let prev = flags[name];
-	if (value instanceof Array) {
-		for (let i = 0, items = iter$(value), len = items.length; i < len; i++) {
-			this.setFlag(--name,items[i]);
-		};
-	} else if (value instanceof Object) {
-		for (let key in value){
-			let val;
-			val = value[key];if (!val) { continue; };
-			this.setFlag(--name,key);
-		};
-	} else if (prev != value) {
+	if (prev != value) {
 		if (prev) { this.unflag(prev) };
 		if (value) { this.flag(value) };
 		flags[name] = value;
@@ -3787,57 +3777,21 @@ Imba.defineTag('content', function(tag){
 		return this.ancestor(node._owner_);
 	};
 	
-	tag.prototype.end = function (){
-		this.setup();
-		this.commit(0);
-		
-		this.end = Imba.Tag.end;
-		return this;
-	};
-	
 	tag.prototype.setup = function (){
 		var v_;
-		this._parent = this.ancestor(this);
-		this.data() && ((this.setName(v_ = this.data()),v_));
-		return this._magic = '2f3a4fccca6406e35bcf33e92dd93135';
-	};
-	
-	tag.prototype.flatten = function (root){
-		var nodes = [];
-		
-		if (root instanceof Array) {
-			for (let i = 0, items = iter$(root), len = items.length; i < len; i++) {
-				nodes.push(items[i]);
-			};
-		} else {
-			nodes.push(root);
-		};
-		
-		return nodes;
-	};
-	
-	tag.prototype.fragment = function (nodes){
-		var fragment = Imba.getTagForDom(Imba.document().createDocumentFragment());
-		for (let i = 0, items = iter$(this.flatten(nodes)), len = items.length, node; i < len; i++) {
-			node = items[i];
-			if (!((node instanceof Imba.Tag))) {
-				continue;
-			};
-			if (this._name === node._for || '') {
-				fragment.appendChild(node);
-			};
-		};
-		return fragment;
+		this._ancestor = this.ancestor(this);
+		return this.data() && ((this.setName(v_ = this.data()),v_));
 	};
 	
 	tag.prototype.render = function (){
-		var nodes = this.fragment(this._parent._children);
-		
-		
-		
-		return this.$open(0).setChildren(
-			nodes
-		,3).synced();
+		var fragment = Imba.getTagForDom(Imba.document().createDocumentFragment());
+		for (let i = 0, items = iter$(this._ancestor._children), len = items.length, node; i < len; i++) {
+			node = items[i];
+			if (!(this._name === node._for || '')) { continue; };
+			fragment.appendChild(node);
+		};
+		this.before(fragment);
+		return this.remove();
 	};
 });
 
@@ -3850,6 +3804,26 @@ Imba.defineTag('content', function(tag){
 Imba.extendTag('element', function(tag){
 	tag.prototype['for'] = function(v){ return this._for; }
 	tag.prototype.setFor = function(v){ this._for = v; return this; };
+	
+	tag.prototype.setClass = function (classes){
+		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes).trim());
+	};
+	
+	tag.prototype.class = function (){
+		return this.getAttribute('class');
+	};
+	
+	tag.prototype.setup = function (){
+		this._children = this.children();
+		return this;
+	};
+	
+	tag.prototype.remove = function (node){
+		var $1, $2;
+		this.dom().remove(($1 = node) && $1._slot_ || node);
+		Imba.TagManager.remove(($2 = node) && $2._tag || node,this);
+		return this;
+	};
 	
 	tag.prototype.before = function (node){
 		if ((typeof node=='string'||node instanceof String)) {
@@ -3867,29 +3841,6 @@ Imba.extendTag('element', function(tag){
 		} else if (node) {
 			this.dom().after(node._slot_ || node);
 			Imba.TagManager.insert(node._tag || node,this);
-		};
-		return this;
-	};
-	
-	tag.prototype.remove = function (node){
-		var $1, $2;
-		this.dom().remove(($1 = node) && $1._slot_ || node);
-		Imba.TagManager.remove(($2 = node) && $2._tag || node,this);
-		return this;
-	};
-	
-	tag.prototype.setClass = function (classes){
-		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes).trim());
-	};
-	
-	tag.prototype.class = function (){
-		return this.getAttribute('class');
-	};
-	
-	tag.prototype.setContent = function (content,type){
-		this._children = content;
-		if (type != 3 && type != 1) {
-			this.setChildren(content,type);
 		};
 		return this;
 	};
