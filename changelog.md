@@ -1,15 +1,8 @@
 ## 1.4.3
 * Slots support through the `<content>` tag.
-* Access to yielded children through @children property.
+* Access to yielded children through @body property.
 * Ability to specify css classes through the class attribute and/or the concise syntax.
 * New tag functionality, before, after, and remove.
-
-## 1.4.2
-* Respect empty parens in event handlers (`<div :tap.someMethod()>`)
-* Allow special variables in event handlers (`<div :tap.someMethod($event,$data)>`)
-* Allow all aria-* attributes
-* Fixed bug where compiler could end up in faulty state
-* Lookup event handlers in owner-scope
 
 ## 1.4.2
 * Respect empty parens in event handlers (`<div :tap.someMethod()>`)

@@ -1,8 +1,25 @@
 var Imba = require("../imba")
 
-# A placeholder tag for enabling the content mechanism.
 tag content
 	prop name
+
+	def flatten root, nodes = []
+		if root isa Array
+			for node in root
+				flatten node, nodes
+		else 
+			nodes.push root
+			
+		return nodes
+	
+	def fragment nodes
+		var fragment = Imba.getTagForDom Imba.document.createDocumentFragment
+		for node in flatten nodes 
+			unless node isa Imba.Tag 
+				continue
+			if @name is node.@for or ''
+				fragment.appendChild node
+		fragment
 	
 	def ancestor node
 		if node?.@context_ === 0
@@ -14,31 +31,21 @@ tag content
 		data && name = data
 
 	def render
-		var fragment = Imba.getTagForDom Imba.document.createDocumentFragment
-		for node in @ancestor.@children when @name is node.@for or ''
-			fragment.appendChild node
-		self.before fragment
-		self.remove
+		setChildren fragment @ancestor.@body
 
-# An extension to the base tag.
-# Provides:
-#	1. Access to yielded children through @children property.
-#	2. Ability to specify css classes through the class attribute and/or the concise syntax.
-#	3. Slot mechanism incl. named slots, through the <content> tag.
-#	4. Some new tag functionality like before, after, and remove.
 extend tag element
 	prop for
-	
+
+	def body content
+		@body = content
+		self
+
 	def setClass classes
 		setAttribute('class', "{getAttribute('class') or ''} {classes}".trim)
 
 	def class
 		getAttribute('class')
 
-	def setup
-		@children = children
-		self
-	
 	def remove node
 		dom.remove(node?.@slot_ or node)
 		Imba.TagManager.remove(node?.@tag or node, self)
@@ -59,3 +66,9 @@ extend tag element
 			dom.after(node.@slot_ or node)
 			Imba.TagManager.insert(node.@tag or node, self)
 		self
+
+	def unwrap wrapper
+		var fragment = Imba.document.createDocumentFragment
+		while wrapper:firstChild
+			fragment.appendChild wrapper.removeChild wrapper:firstChild
+		wrapper:parentNode.replaceChild fragment, wrapper
