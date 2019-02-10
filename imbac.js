@@ -1247,32 +1247,32 @@ return null==e.cacher?e.cacher=(e.key&&this.parent(),this.parent()?this.parent()
 return this._options.childCacher||(this._options.childCacher=this._fragment?new Ye(this,this._tagScope.closure().declare("$",f(".",new Vt,"$"),{system:!0})):this.isSelf()?(t=this._tagScope.closure(),e=f(".",new Vt,"$"),(n=t instanceof Fn?t.node().name():"")&&"render"!=n&&(r="$"+n+"$",i=this.scope__().imbaRef("createTagCache"),e=f("||=",f(".",e,r),m(i,[new Vt]))),t._tagCache||(t._tagCache=new Ye(this,t.declare("$",e,{system:!0})))):!this.parent()||this._options.ownCache?new Ye(this,f(".",this.reference(),"$"),{keys:!0}):this.parent().childCacher())},an.prototype.cacheRef=function(){if(this.isSelf()||!this.cacher())return null
 var t=this._options
 return t.treeRef?t.treeRef:(t.par&&t.par.cacheRef(),t.ivar?t.treeRef=new It("'"+t.ivar.c()+"'"):t.treeRef=this.cacher().nextRef(this))},an.prototype.cachePath=function(){var t=this._options
-return null==t.cachePath?t.cachePath=t.ivar?f(".",this._tagScope.context(),t.ivar):this.cacheRef()&&f(".",this.cacher(),this.cacheRef()._value||this.cacheRef()):t.cachePath},an.prototype.js=function(t){var e=this._options,n=e.par?e.par._options:{},i=this.scope__(),s=[],a=[],p=e.par,c=e.body,h=this.isSelf()?"setChildren":"setContent",u=0,_=p&&p.option("treeType"),y="",d="",v="",g=this.isSelf()?"self":this.type().isClass()?this.type().name():"'"+this.type()._value+"'"
-if(this.isSelf()){var m=i.closure()
-this._reference=i.context(),y=i.context().c()
-var b=m.incr("selfTag"),T=m instanceof Fn?m.node().name():"",E=new Nt(b)
-T&&"render"!=T&&(E=new It("'"+T+b+"'")),a.push(".$open("+E.c()+")"),s=a}else{var k=this.cacher(),S=this.cacheRef(),A=[g],R=this.cachePath()
-if(e.ivar)e.path=R.c(),v=e.path+" = "+e.path+"||"
-else if(S){if(e.path=R.c(),e.key&&!e.loop){e.cachePath=i.temporary(this,{})
-var x="'"+S._value+"$'"
-e.path=f(".",k,f("=",e.cachePath,f("+",new It(x),e.key))).c(),S=e.cacheRef=e.cachePath}e.optim&&e.optim!=this&&2==_&&1!=r(p._children)||(v=e.path+" || "),e.key&&!e.loop&&(e.path=e.cachePath.c())}if(e.ivar){A.push(p?p.reference().c():i.context().c())
-var O=String(e.ivar._value).substr(1)
-a.push(".flag('"+O+"')")}else k&&(A.push(k.c()),S&&A.push(S.c()),p&&p._reference?A.push(p.reference().c()):p&&n.ivar?A.push(n.path):p&&p.cacher()==k?A.push(p.cacheRef().c()):p?A.push(p.reference().c()):(e.ivar||e.key&&!e.loop)&&A.push(i.context().c()))
-d=this.factory().c()+"("+A.join(",")+")"}if(e.body instanceof dt)h="setTemplate"
-else if(e.body instanceof F){var N=e.body.values()
-if(1==r(N)){u=3
-var I=N[0]
-I.isString()?((c=I)._noparen=!0,h="setText",u=6):I instanceof mt?u=I.option("treeType")||3:I instanceof an&&!I.option("key")&&(u=2)}else u=N.every(function(t){return t instanceof an&&!t.option("key")||2==t.option("treeType")||t.isPrimitive()})?2:1,c=new pn(this,e.body)}this.set({treeType:u})
-for(var L,C=[],D=0,$=o(this._attributes),P=$.length;D<P;D++){var j=(L=$[D]).js(t)
-j="."+l.mark(L.name())+j,L.isStatic()?a.push(j):s.push(j)}var M=c&&c.c({expression:!0})
-if(M){var G=e.optim&&2==u?a:s
-if(this.isSelf()&&e.optim&&2==u&&c instanceof pn){var U=this.childCacher().c()
-M=U+".$ = "+U+".$ || "+M}if("setChildren"==h||"setContent"==h)G.push("."+h+"("+M+","+u+")")
-else if("setText"==h){(c instanceof It?a:s).push("."+h+"("+M+")")}else"setTemplate"==h?e.body.nonlocals()?G.push("."+h+"("+M+")"):a.push("."+h+"("+M+")"):G.push("."+h+"("+M+")")}r(C)&&s.push.apply(s,C)
-var B=!this.isNative()||e.template||s.length>0,V=Object.keys(this._attrmap).length
-if(V&&(B=!0),B||this._children.length){for(var z=[],H=0,Y=o(this._children),q=Y.length;H<q;H++){var W=Y[H].option("commit")
-W instanceof Array?z.push.apply(z,W):W&&z.push(W)}var K=w.wrap(z.join(",\n")),X=e.optim&&z.length?"("+K+",true)":""
-!B&&e.optim&&e.optim!=this?this.set({commit:r(z)?z:""}):(r(z)&&e.optim||!this.isNative()||V||e.template)&&s.push("."+(this.isSelf()?"synced":"end")+"("+X+")")}return this._reference&&!this.isSelf()?y=this.reference().c()+" = "+v+"("+this.reference().c()+"="+d+")":y||(y=""+v+d),a.length&&(y+=a.join("")),s!=a&&(e.optim&&e.optim!=this?s.length&&void 0==e.commit&&this.set({commit:""+e.path+s.join("")}):y="("+y+")"+s.join("")),this._typeNum&&this._typeNum.setValue(u),this.set({treeType:u}),y},i(pn,P),e.TagTree=pn,pn.prototype.counter=function(t){return this._counter},pn.prototype.setCounter=function(t){return this._counter=t,this},pn.prototype.conditions=function(t){return this._conditions},pn.prototype.setConditions=function(t){return this._conditions=t,this},pn.prototype.blocks=function(t){return this._blocks},pn.prototype.setBlocks=function(t){return this._blocks=t,this},pn.prototype.cacher=function(t){return this._cacher},pn.prototype.setCacher=function(t){return this._cacher=t,this},pn.prototype.parent=function(){return this._parent||(this._parent=this._owner.parent())},pn.prototype.load=function(t){return t instanceof P?(this._indentation||(this._indentation=t._indentation),t.nodes()):l.compact(t instanceof Array?t:[t])},pn.prototype.root=function(){return this.option("root")},pn.prototype.resolve=function(){var t=this
+return null==t.cachePath?t.cachePath=t.ivar?f(".",this._tagScope.context(),t.ivar):this.cacheRef()&&f(".",this.cacher(),this.cacheRef()._value||this.cacheRef()):t.cachePath},an.prototype.js=function(t){var e=this._options,n=e.par?e.par._options:{},i=this.scope__(),s=[],a=[],p=e.par,c=e.body,h=this.isSelf()?"setChildren":"setContent",u=!this.isSelf()&&!this.isNative(),_=0,y=p&&p.option("treeType"),d="",v="",g="",m=this.isSelf()?"self":this.type().isClass()?this.type().name():"'"+this.type()._value+"'"
+if(this.isSelf()){var b=i.closure()
+this._reference=i.context(),d=i.context().c()
+var T=b.incr("selfTag"),E=b instanceof Fn?b.node().name():"",k=new Nt(T)
+E&&"render"!=E&&(k=new It("'"+E+T+"'")),a.push(".$open("+k.c()+")"),s=a}else{var S=this.cacher(),A=this.cacheRef(),R=[m],x=this.cachePath()
+if(e.ivar)e.path=x.c(),g=e.path+" = "+e.path+"||"
+else if(A){if(e.path=x.c(),e.key&&!e.loop){e.cachePath=i.temporary(this,{})
+var O="'"+A._value+"$'"
+e.path=f(".",S,f("=",e.cachePath,f("+",new It(O),e.key))).c(),A=e.cacheRef=e.cachePath}e.optim&&e.optim!=this&&2==y&&1!=r(p._children)||(g=e.path+" || "),e.key&&!e.loop&&(e.path=e.cachePath.c())}if(e.ivar){R.push(p?p.reference().c():i.context().c())
+var N=String(e.ivar._value).substr(1)
+a.push(".flag('"+N+"')")}else S&&(R.push(S.c()),A&&R.push(A.c()),p&&p._reference?R.push(p.reference().c()):p&&n.ivar?R.push(n.path):p&&p.cacher()==S?R.push(p.cacheRef().c()):p?R.push(p.reference().c()):(e.ivar||e.key&&!e.loop)&&R.push(i.context().c()))
+v=this.factory().c()+"("+R.join(",")+")"}if(e.body instanceof dt)h="setTemplate"
+else if(e.body instanceof F){var I=e.body.values()
+if(1==r(I)){_=3
+var L=I[0]
+L.isString()?((c=L)._noparen=!0,h="setText",_=6):L instanceof mt?_=L.option("treeType")||3:L instanceof an&&!L.option("key")&&(_=2)}else _=I.every(function(t){return t instanceof an&&!t.option("key")||2==t.option("treeType")||t.isPrimitive()})?2:1,c=new pn(this,e.body)}this.set({treeType:_})
+for(var C,D=[],$=0,P=o(this._attributes),j=P.length;$<j;$++){var M=(C=P[$]).js(t)
+M="."+l.mark(C.name())+M,C.isStatic()?a.push(M):s.push(M)}var G=c&&c.c({expression:!0})
+if(u&&s.push(".body("+G+")"),G&&!u){var U=e.optim&&2==_?a:s
+if(this.isSelf()&&e.optim&&2==_&&c instanceof pn){var B=this.childCacher().c()
+G=B+".$ = "+B+".$ || "+G}if("setChildren"==h||"setContent"==h)U.push("."+h+"("+G+","+_+")")
+else if("setText"==h){(c instanceof It?a:s).push("."+h+"("+G+")")}else"setTemplate"==h?e.body.nonlocals()?U.push("."+h+"("+G+")"):a.push("."+h+"("+G+")"):U.push("."+h+"("+G+")")}r(D)&&s.push.apply(s,D)
+var V=!this.isNative()||e.template||s.length>0,z=Object.keys(this._attrmap).length
+if(z&&(V=!0),V||this._children.length){for(var H=[],Y=0,q=o(this._children),W=q.length;Y<W;Y++){var K=q[Y].option("commit")
+K instanceof Array?H.push.apply(H,K):K&&H.push(K)}var X=w.wrap(H.join(",\n")),J=e.optim&&H.length?"("+X+",true)":""
+!V&&e.optim&&e.optim!=this?this.set({commit:r(H)?H:""}):(r(H)&&e.optim||!this.isNative()||z||e.template)&&s.push("."+(this.isSelf()?"synced":"end")+"("+J+")")}return this._reference&&!this.isSelf()?d=this.reference().c()+" = "+g+"("+this.reference().c()+"="+v+")":d||(d=""+g+v),a.length&&(d+=a.join("")),s!=a&&(e.optim&&e.optim!=this?s.length&&void 0==e.commit&&this.set({commit:""+e.path+s.join("")}):d="("+d+")"+s.join("")),this._typeNum&&this._typeNum.setValue(_),this.set({treeType:_}),d},i(pn,P),e.TagTree=pn,pn.prototype.counter=function(t){return this._counter},pn.prototype.setCounter=function(t){return this._counter=t,this},pn.prototype.conditions=function(t){return this._conditions},pn.prototype.setConditions=function(t){return this._conditions=t,this},pn.prototype.blocks=function(t){return this._blocks},pn.prototype.setBlocks=function(t){return this._blocks=t,this},pn.prototype.cacher=function(t){return this._cacher},pn.prototype.setCacher=function(t){return this._cacher=t,this},pn.prototype.parent=function(){return this._parent||(this._parent=this._owner.parent())},pn.prototype.load=function(t){return t instanceof P?(this._indentation||(this._indentation=t._indentation),t.nodes()):l.compact(t instanceof Array?t:[t])},pn.prototype.root=function(){return this.option("root")},pn.prototype.resolve=function(){var t=this
 return t.remap(function(e){return e.consume(t)}),t},pn.prototype.static=function(){return null==this._static?this._static=this.every(function(t){return t instanceof an||t instanceof It||t instanceof I}):this._static},pn.prototype.single=function(){return null==this._single?this._single=1==this.realCount()&&this.last():this._single},pn.prototype.hasTags=function(){return this.some(function(t){return t instanceof an})},pn.prototype.c=function(t){var e=this.single()
 e&&R.current()instanceof V&&(this._indentation=null)
 var n=pn.prototype.__super__.c.call(this,t)

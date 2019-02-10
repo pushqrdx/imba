@@ -33,6 +33,7 @@ def Imba.static items, typ, nr
 ###
 
 ###
+
 def Imba.mount node, into
 	into ||= Imba.document:body
 	into.appendChild(node.dom)
@@ -41,13 +42,10 @@ def Imba.mount node, into
 	Imba.TagManager.refresh
 	return node
 
-
 def Imba.createTextNode node
 	if node and node:nodeType == 3
 		return node
 	return Imba.document.createTextNode(node)
-
-
 
 ###
 This is the baseclass that all tags in imba inherit from.
@@ -432,8 +430,6 @@ class Imba.Tag
 		node.dataset('name') # 'hello'
 		# set a single value
 		node.dataset('name','newname') # self
-
-
 	###
 	def dataset key, val
 		if key isa Object
@@ -703,7 +699,6 @@ class Imba.Tag
 	###
 	def contains node
 		dom.contains(node.@dom or node)
-
 
 	###
 	Shorthand for console.log on elements

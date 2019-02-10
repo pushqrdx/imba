@@ -6469,7 +6469,7 @@ export class Tag < Node
 			for child in @children
 				let co = child.@options
 				if o:hasConditionals and co:optim
-					# console.log "optim child special?"
+					# Optimize child special?
 					co:optim = child
 				elif !co:loop
 					co:optim = self
@@ -6560,17 +6560,18 @@ export class Tag < Node
 		var scope = scope__
 		var calls = []
 		var statics = []
-		
 		var parent = o:par # self.parent
 		var content = o:body
 		var bodySetter = isSelf ? "setChildren" : "setContent"
-		
+		var isImbaTag = (!isSelf and !isNative)
+
 		let contentType = 0
 		let parentType = parent and parent.option(:treeType)
 
 		var out = ""
 		var ctor = ""
 		var pre = ""
+
 		let typ = isSelf ? "self" : (type.isClass ? type.name : "'" + type.@value + "'")
 
 		if isSelf
@@ -6642,7 +6643,9 @@ export class Tag < Node
 
 			if children.len == 1
 				contentType = 3
+
 				let body = children[0]
+
 				if body.isString
 					content = body
 					content.@noparen = yes
@@ -6663,6 +6666,7 @@ export class Tag < Node
 		set(treeType: contentType)
 		
 		var specials = []
+
 		for part in @attributes
 			let out = part.js(jso)
 			out = ".{AST.mark(part.name)}" + out
@@ -6676,10 +6680,12 @@ export class Tag < Node
 		# compile body
 	
 		var body = content and content.c(expression: yes)
-	
-		if body
+
+		if isImbaTag
+			calls.push ".body({body})"
+
+		if body and !isImbaTag
 			let target = (o:optim and contentType == 2) ? statics : calls
-			
 			# cache the body setter itself
 			if isSelf and o:optim and contentType == 2 and content isa TagTree
 				let k = childCacher.c
@@ -6703,14 +6709,14 @@ export class Tag < Node
 			calls.push(*specials)
 			
 		let shouldEnd = !isNative or o:template or calls:length > 0
+		
 		let hasAttrs = Object.keys(@attrmap):length
 		
 		if hasAttrs
 			shouldEnd = yes
 
 		# @children:length
-		if shouldEnd or @children:length
-			
+		if shouldEnd or @children:length			
 			var commits = []
 			
 			for child,i in @children
