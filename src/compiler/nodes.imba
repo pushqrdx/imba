@@ -4944,6 +4944,9 @@ export class TagTypeIdentifier < Identifier
 	def isSimpleNative
 		isNative and !(/input|textarea|select|form|iframe/).test(@str)
 
+	def isSimple
+		(/input|textarea|select|form|iframe/).test(@str)
+
 	def spawner
 		console.log "TagTypeIdentifier shuold never be used"
 		if @ns
@@ -6394,6 +6397,9 @@ export class Tag < Node
 	def isNative
 		type isa TagTypeIdentifier and type.isSimpleNative
 		
+	def isSimple
+		type isa TagTypeIdentifier and type.isSimple
+
 	def isStatic
 		let o = @options
 		!o:hasConditionals and !o:hasLoops and !o:ivar and !o:key
@@ -6563,7 +6569,7 @@ export class Tag < Node
 		var parent = o:par # self.parent
 		var content = o:body
 		var bodySetter = isSelf ? "setChildren" : "setContent"
-		var isImbaTag = (!isSelf and !isNative)
+		var isImbaTag = (!isSelf and !isNative and !isSimple)
 
 		let contentType = 0
 		let parentType = parent and parent.option(:treeType)
