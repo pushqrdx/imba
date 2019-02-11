@@ -66,9 +66,3 @@ extend tag element
 			dom.after(node.@slot_ or node)
 			Imba.TagManager.insert(node.@tag or node, self)
 		self
-
-	def unwrap wrapper
-		var fragment = Imba.document.createDocumentFragment
-		while wrapper:firstChild
-			fragment.appendChild wrapper.removeChild wrapper:firstChild
-		wrapper:parentNode.replaceChild fragment, wrapper

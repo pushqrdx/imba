@@ -3854,14 +3854,6 @@ Imba.extendTag('element', function(tag){
 		};
 		return this;
 	};
-	
-	tag.prototype.unwrap = function (wrapper){
-		var fragment = Imba.document().createDocumentFragment();
-		while (wrapper.firstChild){
-			fragment.appendChild(wrapper.removeChild(wrapper.firstChild));
-		};
-		return wrapper.parentNode.replaceChild(fragment,wrapper);
-	};
 });
 
 
@@ -8238,8 +8230,8 @@ describe('Syntax - Tags',function() {
 	test('attributes',function() {
 		self.jseq("setTitle(strvar)",function() { return (_1('div')).setTitle(strvar).end(); });
 		self.jseq("css('display','block')",function() { return (_1('div').css('display','block')).end(); });
-		self.jseq("setDisabled('disabled')",function() { return (_1('input').setDisabled('disabled')).body(undefined).end(); });
-		self.jseq("setDisabled('disabled').setReadonly('readonly')",function() { return (_1('input').setDisabled('disabled').setReadonly('readonly')).body(undefined).end(); });
+		self.jseq("setDisabled('disabled')",function() { return (_1('input').setDisabled('disabled')).end(); });
+		self.jseq("setDisabled('disabled').setReadonly('readonly')",function() { return (_1('input').setDisabled('disabled').setReadonly('readonly')).end(); });
 		self.jseq(("set('model',strvar,\{number:1\})"),function() { return (_1('div')).set('model',strvar,{number:1}).end(); });
 		return self.jseq("set('aria-hidden','true')",function() { return (_1('div').set('aria-hidden','true')).end(); });
 	});
@@ -9209,12 +9201,12 @@ describe('Tags - Define',function() {
 	});
 	
 	test("void elements",function() {
-		var el = (_1('input')).body(undefined).end();
+		var el = (_1('input')).end();
 		return eq(el.toString(),'<input>');
 	});
 	
 	test("idn attributes",function() {
-		var el = (_1('input').setType('checkbox').setRequired(true).setDisabled(false).setChecked(true).setValue("a",1)).body(undefined).end();
+		var el = (_1('input').setType('checkbox').setRequired(true).setDisabled(false).setChecked(true).setValue("a",1)).end();
 		var html = el.dom().outerHTML;
 		
 		eq(el.dom().required,true);
@@ -11969,11 +11961,11 @@ describe("HTML",function() {
 		
 		return test("automatic value",function() {
 			var t0;
-			var el = (t0 = (t0=_1('select'))).body([
+			var el = (t0 = (t0=_1('select')).setContent([
 				_1('option',t0.$,'A',t0).setText("a"),
 				_1('option',t0.$,'B',t0).setText("b"),
 				_1('option',t0.$,'C',t0).setText("c")
-			]).end();
+			],2)).end();
 			
 			return eq(el.value(),"a");
 		});

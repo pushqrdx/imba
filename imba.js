@@ -205,8 +205,7 @@ return e},t.prototype.fragment=function(t){for(var e,n=i.getTagForDom(i.document
 return n},t.prototype.ancestor=function(t){var e
 return(e=t)&&0===e._context_?t:this.ancestor(t._owner_)},t.prototype.setup=function(){var t
 return this._ancestor=this.ancestor(this),this.data()&&(this.setName(t=this.data()),t)},t.prototype.render=function(){return this.setChildren(this.fragment(this._ancestor._body))}}),i.extendTag("element",function(t){t.prototype.for=function(t){return this._for},t.prototype.setFor=function(t){return this._for=t,this},t.prototype.body=function(t){return this._body=t,this},t.prototype.setClass=function(t){return this.setAttribute("class",((this.getAttribute("class")||"")+" "+t).trim())},t.prototype.class=function(){return this.getAttribute("class")},t.prototype.remove=function(t){var e,n
-return this.dom().remove((e=t)&&e._slot_||t),i.TagManager.remove((n=t)&&n._tag||t,this),this},t.prototype.before=function(t){return"string"==typeof t||t instanceof String?this.dom().before(i.document().createTextNode(t)):t&&(this.dom().before(t._slot_||t),i.TagManager.insert(t._tag||t,this)),this},t.prototype.after=function(t){return"string"==typeof t||t instanceof String?this.dom().after(i.document().createTextNode(t)):t&&(this.dom().after(t._slot_||t),i.TagManager.insert(t._tag||t,this)),this},t.prototype.unwrap=function(t){for(var e=i.document().createDocumentFragment();t.firstChild;)e.appendChild(t.removeChild(t.firstChild))
-return t.parentNode.replaceChild(e,t)}})},function(t,e,n){function r(t){return t?t.toArray?t.toArray():t:[]}var i={},o=n(0),s=function(t,e,n){if(e instanceof Array)for(var i=0,o=r(e),a=o.length;i<a;i++)s(t,o[i],n)
+return this.dom().remove((e=t)&&e._slot_||t),i.TagManager.remove((n=t)&&n._tag||t,this),this},t.prototype.before=function(t){return"string"==typeof t||t instanceof String?this.dom().before(i.document().createTextNode(t)):t&&(this.dom().before(t._slot_||t),i.TagManager.insert(t._tag||t,this)),this},t.prototype.after=function(t){return"string"==typeof t||t instanceof String?this.dom().after(i.document().createTextNode(t)):t&&(this.dom().after(t._slot_||t),i.TagManager.insert(t._tag||t,this)),this}})},function(t,e,n){function r(t){return t?t.toArray?t.toArray():t:[]}var i={},o=n(0),s=function(t,e,n){if(e instanceof Array)for(var i=0,o=r(e),a=o.length;i<a;i++)s(t,o[i],n)
 else if(e&&e._slot_)t.removeChild(e)
 else if(null!=e){var u=n?n.nextSibling:t._dom.firstChild
 if(!(u instanceof Text&&u.textContent==e))throw"cannot remove string"
@@ -223,8 +222,8 @@ var y=-1==m?0:l[m]+1
 y>d&&(d=y,f=_),l.push(y)}else t.removeChild(u),p.push(-1),l.push(-1)
 for(var T=[],b=c.length-1;b>=0;)b==f&&-1!=c[b]&&(T[c[b]]=!0,f=p[f]),b-=1
 for(var S,E=0,x=r(e),A=x.length;E<A;E++){if(S=x[E],!T[E]){S&&S._dom||(S=e[E]=o.createTextNode(S))
-var C=e[E-1]
-i.insertNestedAfter(t,S,C&&C._slot_||C||s)}s=S._slot_||s&&s.nextSibling||t._dom.firstChild}return h&&h._slot_||s},c=function(t,e,n,r){for(var i=e.length,o=n.length,s=e.cache.i$,a=0,u=i-o;a<o&&a<i&&e[a]===n[a];)a++
+var w=e[E-1]
+i.insertNestedAfter(t,S,w&&w._slot_||w||s)}s=S._slot_||s&&s.nextSibling||t._dom.firstChild}return h&&h._slot_||s},c=function(t,e,n,r){for(var i=e.length,o=n.length,s=e.cache.i$,a=0,u=i-o;a<o&&a<i&&e[a]===n[a];)a++
 if(s>1e3&&s-i>500&&e.cache.$prune(e),!(u>0&&a==o)){if(u>0){for(var c=i;c>a&&e[c-1]===n[c-1-u];)c--
 if(u==c-a){for(var p=n[a]._slot_;a<c;)t.insertBefore(e[a++],p)
 return}}else{if(u<0&&a==i){for(;a<o;)t.removeChild(n[a++])
