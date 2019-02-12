@@ -31,9 +31,8 @@ def Imba.static items, typ, nr
 	return items
 
 ###
-
+Mounts an imba tag into the given dom node.
 ###
-
 def Imba.mount node, into
 	into ||= Imba.document:body
 	into.appendChild(node.dom)
@@ -42,6 +41,9 @@ def Imba.mount node, into
 	Imba.TagManager.refresh
 	return node
 
+###
+Creates a new dom text node.
+###
 def Imba.createTextNode node
 	if node and node:nodeType == 3
 		return node
@@ -487,22 +489,24 @@ class Imba.Tag
 		render if beforeRender !== false
 		self
 		
+	###
+	Called right before render of the tag, can control whether the
+	tag will render by returning false.
+	@return {boolean}
+	###
 	def beforeRender
 		self
 
 	###
-
 	Called by the tag-scheduler (if this tag is scheduled)
 	By default it will call this.render. Do not override unless
 	you really understand it.
-
 	###
 	def tick
 		render if beforeRender !== false
 		self
 
 	###
-	
 	A very important method that you will practically never manually.
 	The tag syntax of Imba compiles to a chain of setters, which always
 	ends with .end. `<a.large>` compiles to `tag('a').flag('large').end()`
@@ -533,9 +537,11 @@ class Imba.Tag
 	def synced
 		self
 
-	# called when the node is awakened in the dom - either automatically
-	# upon attachment to the dom-tree, or the first time imba needs the
-	# tag for a domnode that has been rendered on the server
+	###
+	called when the node is awakened in the dom - either automatically
+	upon attachment to the dom-tree, or the first time imba needs the
+	tag for a domnode that has been rendered on the server
+	###
 	def awaken
 		self
 
@@ -629,7 +635,6 @@ class Imba.Tag
 		@scheduler ?= Imba.Scheduler.new(self)
 
 	###
-
 	Shorthand to start scheduling a node. The method will basically
 	proxy the arguments through to scheduler.configure, and then
 	activate the scheduler.
@@ -664,9 +669,17 @@ class Imba.Tag
 		for item in @dom:children
 			item.@tag or Imba.getTagForDom(item)
 	
+	###
+	Gets an Imba tag matching the given selector
+	@return {Imba.Tag}
+	###
 	def querySelector q
 		Imba.getTagForDom(@dom.querySelector(q))
 
+	###
+	Gets all Imba tags matching the given selector
+	@return {Imba.Tag[]}
+	###
 	def querySelectorAll q
 		var items = []
 		for item in @dom.querySelectorAll(q)
@@ -729,9 +742,15 @@ class Imba.Tag
 				dom:style[name] = val
 		self
 		
+	###
+	Sets the style attribute of the current tag.
+	###
 	def setStyle style
 		setAttribute('style',style)
 
+	###
+	Gets the style attribute of the current tag.
+	###
 	def style
 		getAttribute('style')
 
@@ -760,6 +779,10 @@ class Imba.Tag
 		dom.blur
 		self
 
+	###
+	Returns string representation of the current tag.
+	@return {string}
+	###
 	def toString
 		dom:outerHTML
 	
@@ -791,10 +814,8 @@ class Imba.SVGTag < Imba.Tag
 				classes.push("_" + child.@name.replace(/_/g, '-'))
 			child.@classes = classes
 
-
 Imba.HTML_TAGS = "a abbr address area article aside audio b base bdi bdo big blockquote body br button canvas caption cite code col colgroup data datalist dd del details dfn div dl dt em embed fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param pre progress q rp rt ruby s samp script section select small source span strong style sub summary sup table tbody td textarea tfoot th thead time title tr track u ul var video wbr".split(" ")
 Imba.HTML_TAGS_UNSAFE = "article aside header section".split(" ")
-
 Imba.HTML_ATTRS =
 	a: "href target hreflang media download rel type ping referrerpolicy"
 	audio: "autoplay controls crossorigin loop muted preload src"
@@ -825,8 +846,6 @@ Imba.HTML_ATTRS =
 	track: "default kind label src srclang"
 	td: "colspan rowspan headers"
 	th: "colspan rowspan"
-
-
 Imba.HTML_PROPS =
 	input: "autofocus autocomplete autocapitalize autocorrect value placeholder required disabled multiple checked readOnly spellcheck"
 	textarea: "autofocus autocomplete autocapitalize autocorrect value placeholder required disabled multiple checked readOnly spellcheck"
