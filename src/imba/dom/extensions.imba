@@ -41,7 +41,7 @@ extend tag element
 		self
 
 	def setClass classes
-		setAttribute('class', "{getAttribute('class') or ''} {classes}".trim)
+		setAttribute('class', classes)
 
 	def class
 		getAttribute('class')

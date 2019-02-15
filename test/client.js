@@ -1320,7 +1320,6 @@ Imba.static = function (items,typ,nr){
 
 
 
-
 Imba.mount = function (node,into){
 	into || (into = Imba.document().body);
 	into.appendChild(node.dom());
@@ -1329,6 +1328,8 @@ Imba.mount = function (node,into){
 	Imba.TagManager.refresh();
 	return node;
 };
+
+
 
 Imba.createTextNode = function (node){
 	if (node && node.nodeType == 3) {
@@ -1793,6 +1794,8 @@ Imba.Tag.prototype.commit = function (){
 	return this;
 };
 
+
+
 Imba.Tag.prototype.beforeRender = function (){
 	return this;
 };
@@ -1827,7 +1830,6 @@ Imba.Tag.prototype.$open = function (context){
 Imba.Tag.prototype.synced = function (){
 	return this;
 };
-
 
 
 
@@ -1946,9 +1948,13 @@ Imba.Tag.prototype.children = function (sel){
 	return res;
 };
 
+
+
 Imba.Tag.prototype.querySelector = function (q){
 	return Imba.getTagForDom(this._dom.querySelector(q));
 };
+
+
 
 Imba.Tag.prototype.querySelectorAll = function (q){
 	var items = [];
@@ -2021,9 +2027,13 @@ Imba.Tag.prototype.css = function (key,val,mod){
 	return this;
 };
 
+
+
 Imba.Tag.prototype.setStyle = function (style){
 	return this.setAttribute('style',style);
 };
+
+
 
 Imba.Tag.prototype.style = function (){
 	return this.getAttribute('style');
@@ -2049,6 +2059,8 @@ Imba.Tag.prototype.blur = function (){
 	this.dom().blur();
 	return this;
 };
+
+
 
 Imba.Tag.prototype.toString = function (){
 	return this.dom().outerHTML;
@@ -2089,10 +2101,8 @@ Imba.SVGTag.inherit = function (child){
 	};
 };
 
-
 Imba.HTML_TAGS = "a abbr address area article aside audio b base bdi bdo big blockquote body br button canvas caption cite code col colgroup data datalist dd del details dfn div dl dt em embed fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param pre progress q rp rt ruby s samp script section select small source span strong style sub summary sup table tbody td textarea tfoot th thead time title tr track u ul var video wbr".split(" ");
 Imba.HTML_TAGS_UNSAFE = "article aside header section".split(" ");
-
 Imba.HTML_ATTRS = {
 	a: "href target hreflang media download rel type ping referrerpolicy",
 	audio: "autoplay controls crossorigin loop muted preload src",
@@ -2124,8 +2134,6 @@ Imba.HTML_ATTRS = {
 	td: "colspan rowspan headers",
 	th: "colspan rowspan"
 };
-
-
 Imba.HTML_PROPS = {
 	input: "autofocus autocomplete autocapitalize autocorrect value placeholder required disabled multiple checked readOnly spellcheck",
 	textarea: "autofocus autocomplete autocapitalize autocorrect value placeholder required disabled multiple checked readOnly spellcheck",
@@ -3821,7 +3829,7 @@ Imba.extendTag('element', function(tag){
 	};
 	
 	tag.prototype.setClass = function (classes){
-		return this.setAttribute('class',("" + (this.getAttribute('class') || '') + " " + classes).trim());
+		return this.setAttribute('class',classes);
 	};
 	
 	tag.prototype.class = function (){
