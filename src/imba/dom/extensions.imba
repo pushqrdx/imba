@@ -42,7 +42,7 @@ extend tag element
 
 	def setClass classes
 		for flag in classes.split ' '
-			flagIf flag, not hasFlag flag
+			self.flag flag
 		self
 			
 	def class
