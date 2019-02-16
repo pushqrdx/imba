@@ -41,8 +41,10 @@ extend tag element
 		self
 
 	def setClass classes
-		setAttribute('class', classes)
-
+		for flag in classes.split ' '
+			flagIf flag, not hasFlag flag
+		self
+			
 	def class
 		getAttribute('class')
 

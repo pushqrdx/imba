@@ -3829,7 +3829,11 @@ Imba.extendTag('element', function(tag){
 	};
 	
 	tag.prototype.setClass = function (classes){
-		return this.setAttribute('class',classes);
+		for (let i = 0, items = iter$(classes.split(' ')), len = items.length, flag; i < len; i++) {
+			flag = items[i];
+			this.flagIf(flag,!this.hasFlag(flag));
+		};
+		return this;
 	};
 	
 	tag.prototype.class = function (){
